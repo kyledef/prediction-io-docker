@@ -1,1 +1,1 @@
-docker build -t predio .
+docker build -t predio-docker .
