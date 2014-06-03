@@ -25,4 +25,8 @@ RUN ./bin/setup.sh
 #expose docker port
 EXPOSE 9000
 
-RUN ./bin/stop-all.sh
+
+ADD waiter.sh /waiter.sh
+
+WORKDIR /
+RUN chmod +x ./waiter.sh
