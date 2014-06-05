@@ -33,9 +33,9 @@ EXPOSE 9000 8000
 #brute hack to inject credentials to server
 RUN apt-get install -y mongodb-clients
 
-RUN mongo MONGO_IP:MONGO_PORT/predictionio --eval "db.users.insert({_id : NumberInt(1), email : 'test@test.com', password : '`echo -n password|md5sum | cut -f1 -d' '`', firstname : '<user>', lastname : '<user>' })"
+RUN mongo $MONGO_IP:$MONGO_PORT/predictionio --eval "db.users.insert({_id : NumberInt(1), email : 'test@test.com', password : '`echo -n password|md5sum | cut -f1 -d' '`', firstname : '<user>', lastname : '<user>' })"
 
-RUN apt-get remove mongodb
+RUN apt-get remove -y mongodb-clients
 
 ADD waiter.sh /waiter.sh
 
