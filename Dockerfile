@@ -30,14 +30,16 @@ RUN sed -i -r -e"s/^(.*?db.host\s*=)\s*(.*)/\1\"$MONGO_IP\"/" ./conf/predictioni
 RUN sed -i -r -e"s/^(.*?db.port\s*=)\s*(.*)/\1$MONGO_PORT/" ./conf/predictionio.conf
 
 
+WORKDIR /
 #install hadoop
-#RUN mv hadoop-1.2.1 hadoop
-#RUN cp /PredictionIO/conf/hadoop/* /hadoop/conf/
-#RUN echo "io.prediction.commons.settings.hadoop.home=/hadoop-1.2.1" >> /PredictionIO/conf/predictionio.conf
-#RUN /hadoop-1.2.1/bin/hadoop namenode -format
+RUN tar -xzf hadoop-1.2.1-bin.tar.gz
+RUN mv hadoop-1.2.1 hadoop
+RUN cp /PredictionIO/conf/hadoop/* /hadoop/conf/
+RUN echo "io.prediction.commons.settings.hadoop.home=/hadoop" >> /PredictionIO/conf/predictionio.conf
+#RUN /hadoop/bin/hadoop namenode -format
 
 
-
+WORKDIR PredictionIO
 RUN ./bin/setup.sh
 
 #expose web and api endpoints
