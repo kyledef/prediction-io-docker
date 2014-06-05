@@ -22,9 +22,8 @@ RUN sed -i -r -e"s/^(.*?db.port\s*=)\s*(.*)/\1$MONGO_PORT/" ./conf/predictionio.
 
 RUN ./bin/setup.sh
 
-#expose docker port
-EXPOSE 9000
-
+#expose web and api endpoints
+EXPOSE 9000 8000
 
 ADD waiter.sh /waiter.sh
 
