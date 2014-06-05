@@ -25,6 +25,13 @@ RUN ./bin/setup.sh
 #expose web and api endpoints
 EXPOSE 9000 8000
 
+#brute hack to inject credentials to server
+RUN apt-get install mongodb
+
+RUN mongo MONGO_IP:MONGO_PORT/predictionio --eval "db.users.insert({_id : NumberInt(1), email : 'test@test.com', password : '`echo -n password|md5sum | cut -f1 -d' '`', firstname : '<user>', lastname : '<user>' })"
+
+RUN apt-get remove mongodb
+
 ADD waiter.sh /waiter.sh
 
 WORKDIR /
