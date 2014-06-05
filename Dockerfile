@@ -6,23 +6,36 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get -y install curl gzip tar un
 ENV MONGO_IP 107.170.170.116
 ENV MONGO_PORT 27017
 
+
+
+
+RUN wget http://download.prediction.io/PredictionIO-0.7.1.zip
+RUN wget http://archive.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz
+RUN apt-get install -y mongodb-clients
+
 #Install Oracle Java 7
 RUN add-apt-repository ppa:webupd8team/java -y && \
     apt-get update && \
     echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java7-installer
 
-#install hadoop
-RUN curl http://archive.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz | tar xz
 
 
-RUN wget http://download.prediction.io/PredictionIO-0.7.1.zip
 RUN unzip PredictionIO-0.7.1.zip
-WORKDIR PredictionIO-0.7.1
+RUN mv PredictionIO-0.7.1 PredictionIO
+WORKDIR PredictionIO
 
 RUN sed -i -r -e"s/^(.*?db.type\s*=)\s*(.*)/\1mongodb/" ./conf/predictionio.conf
 RUN sed -i -r -e"s/^(.*?db.host\s*=)\s*(.*)/\1\"$MONGO_IP\"/" ./conf/predictionio.conf
 RUN sed -i -r -e"s/^(.*?db.port\s*=)\s*(.*)/\1$MONGO_PORT/" ./conf/predictionio.conf
+
+
+#install hadoop
+#RUN mv hadoop-1.2.1 hadoop
+#RUN cp /PredictionIO/conf/hadoop/* /hadoop/conf/
+#RUN echo "io.prediction.commons.settings.hadoop.home=/hadoop-1.2.1" >> /PredictionIO/conf/predictionio.conf
+#RUN /hadoop-1.2.1/bin/hadoop namenode -format
+
 
 
 RUN ./bin/setup.sh
@@ -30,14 +43,15 @@ RUN ./bin/setup.sh
 #expose web and api endpoints
 EXPOSE 9000 8000
 
-#brute hack to inject credentials to server
-RUN apt-get install -y mongodb-clients
-
-RUN mongo $MONGO_IP:$MONGO_PORT/predictionio --eval "db.users.insert({_id : NumberInt(1), email : 'test@test.com', password : '`echo -n password|md5sum | cut -f1 -d' '`', firstname : '<user>', lastname : '<user>' })"
-
-RUN apt-get remove -y mongodb-clients
-
-ADD waiter.sh /waiter.sh
 
 WORKDIR /
+
+#brute hack to inject credentials to server
+ADD create_user.sh /create_user.sh
+RUN chmod +x ./create_user.sh
+RUN ./create_user.sh
+RUN apt-get remove -y mongodb-clients
+
+
+ADD waiter.sh /waiter.sh
 RUN chmod +x ./waiter.sh
