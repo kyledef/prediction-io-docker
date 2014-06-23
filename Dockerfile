@@ -1,11 +1,12 @@
 
 FROM ubuntu
+RUN apt-get update
+
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get -y install curl gzip tar unzip zip libgomp1 wget software-properties-common python-software-properties
 
 #CHANGE THESE!!!
 ENV MONGO_IP 107.170.170.116
 ENV MONGO_PORT 27017
-
 
 
 
