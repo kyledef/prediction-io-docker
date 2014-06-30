@@ -3,10 +3,11 @@ FROM ubuntu
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get -y install curl gzip tar unzip zip libgomp1 wget software-properties-common python-software-properties
 
 #CHANGE THESE!!!
-ENV MONGO_IP 107.170.170.116
+ENV MONGO_IP 127.0.0.1
 ENV MONGO_PORT 27017
 
 
+#WORKDIR ~/
 
 
 RUN wget http://download.prediction.io/PredictionIO-0.7.1.zip
@@ -23,14 +24,16 @@ RUN add-apt-repository ppa:webupd8team/java -y && \
 
 RUN unzip PredictionIO-0.7.1.zip
 RUN mv PredictionIO-0.7.1 PredictionIO
-WORKDIR PredictionIO
 
-RUN sed -i -r -e"s/^(.*?db.type\s*=)\s*(.*)/\1mongodb/" ./conf/predictionio.conf
-RUN sed -i -r -e"s/^(.*?db.host\s*=)\s*(.*)/\1\"$MONGO_IP\"/" ./conf/predictionio.conf
-RUN sed -i -r -e"s/^(.*?db.port\s*=)\s*(.*)/\1$MONGO_PORT/" ./conf/predictionio.conf
+#WORKDIR PredictionIO
+
+RUN sed -i -r -e"s/^(.*?db.type\s*=)\s*(.*)/\1mongodb/" PredictionIO/conf/predictionio.conf
+RUN sed -i -r -e"s/^(.*?db.host\s*=)\s*(.*)/\1\"$MONGO_IP\"/" PredictionIO/conf/predictionio.conf
+RUN sed -i -r -e"s/^(.*?db.port\s*=)\s*(.*)/\1$MONGO_PORT/" PredictionIO/conf/predictionio.conf
 
 
-WORKDIR /
+#WORKDIR /
+
 #install hadoop
 RUN tar -xzf hadoop-1.2.1-bin.tar.gz
 RUN mv hadoop-1.2.1 hadoop
@@ -39,18 +42,19 @@ RUN echo "io.prediction.commons.settings.hadoop.home=/hadoop" >> /PredictionIO/c
 #RUN /hadoop/bin/hadoop namenode -format
 
 
-WORKDIR PredictionIO
-RUN ./bin/setup.sh
+#WORKDIR PredictionIO
+
+RUN PredictionIO/bin/setup.sh
 
 #expose web and api endpoints
 EXPOSE 9000 8000
 
 
-WORKDIR /
+#WORKDIR /
 
 #brute hack to inject credentials to server
-ADD create_user.sh /create_user.sh
-RUN chmod +x ./create_user.sh
+ADD create_user.sh ./create_user.sh
+RUN chmod +x create_user.sh
 RUN ./create_user.sh
 RUN apt-get remove -y mongodb-clients
 
