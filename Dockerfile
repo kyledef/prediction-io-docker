@@ -2,7 +2,8 @@
 FROM ubuntu
 RUN apt-get update
 
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get -y install curl gzip tar unzip zip libgomp1 wget software-properties-common python-software-properties
+RUN export DEBIAN_FRONTEND=noninteractive && \
+	apt-get -y install curl gzip tar unzip zip libgomp1 wget software-properties-common python-software-properties
 
 #CHANGE THESE!!!
 ENV MONGO_IP 127.0.0.1
@@ -11,7 +12,7 @@ ENV MONGO_PORT 27017
 
 #WORKDIR ~/
 
-RUN wget http://download.prediction.io/PredictionIO-0.7.1.zip
+RUN wget http://download.prediction.io/PredictionIO-0.7.3.zip
 RUN wget http://archive.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz
 RUN apt-get install -y mongodb-clients
 
@@ -23,8 +24,8 @@ RUN add-apt-repository ppa:webupd8team/java -y && \
 
 
 
-RUN unzip PredictionIO-0.7.1.zip
-RUN mv PredictionIO-0.7.1 PredictionIO
+RUN unzip PredictionIO-0.7.3.zip
+RUN mv PredictionIO-0.7.3 PredictionIO
 
 #WORKDIR PredictionIO
 
