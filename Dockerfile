@@ -1,5 +1,7 @@
 
 FROM ubuntu
+RUN apt-get update
+
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get -y install curl gzip tar unzip zip libgomp1 wget software-properties-common python-software-properties
 
 #CHANGE THESE!!!
@@ -8,7 +10,6 @@ ENV MONGO_PORT 27017
 
 
 #WORKDIR ~/
-
 
 RUN wget http://download.prediction.io/PredictionIO-0.7.1.zip
 RUN wget http://archive.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz
